@@ -304,16 +304,13 @@ public class TransactionPlay {
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
 
 		List<String> actual = wordsStream.stream()
-				.map(e -> e.toCharArray())
-				.distinct()
-				.sorted(new Comparator<char[]>() {
-					@Override
-					public int compare(char[] o1, char[] o2) {
-						return o1.toString().compareTo(o2.toString());
-					}
-				})
-						.map(e -> e.toString())
+								.flatMapToInt(String::chars)
+								.mapToObj(i -> (char) i)
+								.distinct()
+								.map(e -> e.toString())
 								.collect(Collectors.toList());
+		System.out.println(actual);
+
 		assertEquals(expected, actual);
 	}
 	
