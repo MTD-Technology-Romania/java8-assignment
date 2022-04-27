@@ -30,6 +30,7 @@ public class TransactionPlay {
 		List<Transaction> expected = Arrays.asList(transactions.get(0), transactions.get(2));
 
 		List<Transaction> list = null; // TODO
+		System.out.println();
 
 		assertEquals(expected, list);
 	}
