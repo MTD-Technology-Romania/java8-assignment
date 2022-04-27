@@ -2,8 +2,8 @@ package training.java8.stream.transaction;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,27 +29,41 @@ public class TransactionPlay {
 	public void old_school_all_2011_transactions_sorted_by_value() {
 		List<Transaction> expected = Arrays.asList(transactions.get(0), transactions.get(2));
 
-		List<Transaction> list = null; // TODO
-		System.out.println();
-
+		List<Transaction> list = new ArrayList<Transaction>();
+		for (Transaction tranzactie : transactions) {
+			int an_tranzactie = tranzactie.getYear();
+			if (an_tranzactie == 2011) {
+				list.add(tranzactie);
+			}
+		}
+		list.sort(Comparator.comparing(tranzactie-> tranzactie.getValue()));
+		System.out.println(list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 
 	@Test //1
 	public void all_2011_transactions_sorted_by_value() {
 		List<Transaction> expected = Arrays.asList(transactions.get(0), transactions.get(2));
-		
-		List<Transaction> list = null; // TODO
-		
-		assertEquals(expected, list); 									
+
+		List<Transaction> list =
+				transactions.stream()
+						    .filter(transaction -> transaction.getYear()==2011 )
+						    .sorted(Comparator.comparing(transaction -> transaction.getValue()))
+						    .collect(Collectors.toList());
+		System.out.println(list); //vizualizare rezultate
+		assertEquals(expected, list);
 	}
 		
 	@Test //2
 	public void old_school_unique_cities_of_the_traders() {
 		List<String> expected = Arrays.asList("Cambridge", "Milan");
 		
-		List<String> list = null; // TODO
-
+		List<String> list = new ArrayList<>();
+		for (Transaction tranzactie:transactions) {
+			if (!list.contains(tranzactie.getTrader().getCity()))
+			list.add(tranzactie.getTrader().getCity());
+		}
+		System.out.println(list);
 		assertEquals(expected, list); 									
 	}
 
@@ -57,8 +71,12 @@ public class TransactionPlay {
 	public void unique_cities_of_the_traders() {
 		List<String> expected = Arrays.asList("Cambridge", "Milan");
 
-		List<String> list = null; // TODO
-
+		List<String> list =
+				transactions.stream()
+						    .map(tranzactie->tranzactie.getTrader().getCity())
+						    .distinct()
+						    .collect(Collectors.toList());
+		System.out.println(list);
 		assertEquals(expected, list);
 	}
 	
@@ -66,8 +84,15 @@ public class TransactionPlay {
 	public void old_school_traders_from_Cambridge_sorted_by_name() {
 		List<Trader> expected = Arrays.asList(alan, brian, raoul);
 
-		List<Trader> list = null; // TODO
-		
+		List<Trader> list = new ArrayList<>();
+		for (Transaction tranzactie:transactions){
+			Trader t=tranzactie.getTrader();
+			if (t.getCity()=="Cambridge")
+				if (!list.contains(t))
+					list.add(t);
+		}
+		list.sort(Comparator.comparing(Trader::getName));
+		System.out.println(list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 
@@ -75,17 +100,31 @@ public class TransactionPlay {
 	public void traders_from_Cambridge_sorted_by_name() {
 		List<Trader> expected = Arrays.asList(alan, brian, raoul);
 
-		List<Trader> list = null; // TODO
+		List<Trader> list =
+				transactions.stream()
+						    .map(transaction -> transaction.getTrader())
+						    .filter(trader -> trader.getCity()=="Cambridge")
+						    .distinct()
+						    .sorted(Comparator.comparing(trader -> trader.getName()))
+						    .collect(Collectors.toList());
 
+		System.out.println(list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 	
 	@Test //4
 	public void old_school_names_of_all_traders_sorted_joined() {
 		String expected = "Alan,Brian,Mario,Raoul";
-		
-		String joined = null; // TODO
-		
+		ArrayList<String> traderArrayList = new ArrayList<>();
+		for (Transaction t : transactions) {
+			String trader = t.getTrader().getName();
+			if (!traderArrayList.contains(trader))
+				traderArrayList.add(trader);
+		}
+		traderArrayList.sort(Comparator.naturalOrder());
+		String joined = traderArrayList.toString();
+		joined = joined.substring(1, traderArrayList.toString().length() - 1).replaceAll(" ", "");
+		System.out.println(joined); //vizualizare rezultate
 		assertEquals(expected, joined);
 	}
 
@@ -93,50 +132,109 @@ public class TransactionPlay {
 	public void names_of_all_traders_sorted_joined() {
 		String expected = "Alan,Brian,Mario,Raoul";
 
-		String joined = null; // TODO
+		List<String> joinedList =
+				transactions.stream()
+						.map(transaction -> transaction.getTrader().getName())
+						.distinct()
+						.sorted(Comparator.naturalOrder())
+						.toList();
+
+		//cum colectam intr-un string direct, care sa aibe ,?
+		/*String joined =
+		    transactions.stream()
+						.map(transaction -> transaction.getTrader().getName())
+						.distinct()
+						.sorted(Comparator.naturalOrder())
+						.collect(Collectors.joining(,));
+
+		System.out.println(joined); //vizualizare rezultate*/
+
+
+		String joined = joinedList.toString().substring(1,joinedList.toString().length()-1).replaceAll(" ","");
+		System.out.println(joined); //vizualizare rezultate
 
 		assertEquals(expected, joined);
 	}
 			
 	@Test //5
 	public void old_school_are_traders_in_Milano() {
-		boolean areTradersInMilan = false; // TODO
-		
+
+		boolean areTradersInMilan=false;
+
+		for (Transaction tranzactie:transactions){
+			String city = tranzactie.getTrader().getCity();
+			if (city=="Milan")
+				areTradersInMilan=true;
+		}
+		System.out.println(areTradersInMilan); //vizualizare rezultate
+
 		assertTrue(areTradersInMilan);
 	}
 
 	@Test //5
 	public void are_traders_in_Milano() {
-		boolean areTradersInMilan = false; // TODO
+		boolean areTradersInMilan=false;
 
+		List<String> areTradersInMilanList =
+				transactions.stream()
+						    .map(transaction -> transaction.getTrader().getCity())
+						    .filter(city->city.equals("Milan"))
+						    .collect(Collectors.toList());
+
+		if (!areTradersInMilanList.isEmpty())
+			areTradersInMilan=true;
+
+		System.out.println(areTradersInMilanList); //vizualizare rezultate
+		System.out.println(areTradersInMilan);     //vizualizare rezultat
 		assertTrue(areTradersInMilan);
 	}
 	
 	@Test //6 
 	public void old_school_sum_of_values_of_transactions_from_Cambridge_traders() {
-		int sum = -1; // TODO
-		
+		int sum = 0;
+		for (Transaction tranzactie:transactions){
+			if (tranzactie.getTrader().getCity()=="Cambridge"){
+				sum+=tranzactie.getValue();
+			}
+		}
+		System.out.println(sum); //vizualizare rezultat
 		assertEquals(2650, sum);
 	}
 
 	@Test //6
 	public void sum_of_values_of_transactions_from_Cambridge_traders() {
-		int sum = -1; // TODO
 
+		int sum=
+				transactions.stream()
+						    .filter(transaction -> transaction.getTrader().getCity() == "Cambridge")
+						    .map(transaction -> transaction.getValue())
+						    .reduce(0,(e1, e2) -> e1 + e2);
+
+		System.out.println(sum); // vizualizare rezultat
 		assertEquals(2650, sum);
 	}
 	
 	@Test //7
 	public void old_school_max_transaction_value() {
-		int max = -1; // TODO
-		
+		int max = -1;
+
+		for (Transaction tranzactie : transactions){
+			if (tranzactie.getValue()>max)
+				max=tranzactie.getValue();
+		}
+		System.out.println(max); //vizualizare rezultat
 		assertEquals(1000, max);
 	}
 
 	@Test //7
 	public void max_transaction_value() {
-		int max = -1; // TODO
+		int max =
+				transactions.stream()
+						    .map(transaction->transaction.getValue())
+						    .max((x, y) -> Integer.compare(x, y))
+						    .get();
 
+		System.out.println(max); //vizualizare rezultat
 		assertEquals(1000, max);
 	}
 
@@ -144,30 +242,59 @@ public class TransactionPlay {
 	@Test //8
 	public void old_school_transaction_with_smallest_value() {
 		Transaction expected = transactions.get(0);
-		Transaction min = null; // TODO
+		Transaction min = null;
+
+		int a = 2147483647;
+		for (Transaction tranzactie : transactions) {
+			if (tranzactie.getValue() < a) {
+				min = tranzactie;
+				a = tranzactie.getValue();
+			}
+		}
+		System.out.println(a); //vizualizare rezultat
 		assertEquals(expected, min);
 	}
 
-	@Test //8
+	@Test //8 //need help ggl
 	public void transaction_with_smallest_value() {
 		Transaction expected = transactions.get(0);
-		Transaction min = null; // TODO
+		Transaction min = null;
+
+		Transaction m=
+				transactions.stream()
+						    .min(Comparator.comparing(transaction -> transaction.getValue()))
+						    .get();
+		min=m;
 		assertEquals(expected, min);
 	}
 
 	@Test //9
 	public void old_school_a_transaction_from_2012() {
 		Transaction expected = transactions.get(1);
-		Transaction tx2012 = null; // TODO
-		
+		Transaction tx2012 = null;
+
+		for (Transaction tranzactie:transactions) {
+			if (tranzactie.getYear() == 2012) {
+				tx2012 = tranzactie;
+				break; //first transaction
+			}
+		}
+		System.out.println(tx2012); //vizualizare rezultat
 		assertEquals(expected, tx2012);
 	}
 
 	@Test //9
 	public void a_transaction_from_2012() {
 		Transaction expected = transactions.get(1);
-		Transaction tx2012 = null; // TODO
+		Transaction tx2012 = null;
 
+		Transaction t=
+				transactions.stream()
+						    .filter(transaction -> transaction.getYear()==2012)
+						    .findFirst()
+						    .get();
+		tx2012=t;
+		System.out.println(t);
 		assertEquals(expected, tx2012);
 	}
 
@@ -177,18 +304,40 @@ public class TransactionPlay {
 	public void old_school_uniqueCharactersOfManyWords() {
 		List<String> expected = Arrays.asList("a", "b", "c", "d", "f");
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
-		
-		List<String> actual = null; // TODO
+		List<String> actual=new ArrayList<>();
+
+		List<String> act=new ArrayList<>();
+		for (String eachWord:wordsStream) {
+			for (int i = 0; i < eachWord.length(); i++) {
+				act.add(String.valueOf(eachWord.charAt(i)));
+			}
+		}
+		Set <String> sets=new HashSet<>(act);
+		actual.addAll(sets);
+
+//.. ?
+		/*actual= actual.stream()
+				      .distinct()
+				      .collect(Collectors.toList());*/
+
+		System.out.println(actual); //vizualizarea rezultatului
 		assertEquals(expected, actual);
 	}
+
+
+
 
 	@Test
 	public void uniqueCharactersOfManyWords() {
 		List<String> expected = Arrays.asList("a", "b", "c", "d", "f");
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
 
-		List<String> actual = null; // TODO
-		assertEquals(expected, actual);
+		/*List<String> actual = wordsStream.stream()
+				..
+*/
+
+
+		//assertEquals(expected, actual);
 	}
 	
 	
