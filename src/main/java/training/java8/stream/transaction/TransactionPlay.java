@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -276,6 +277,7 @@ public class TransactionPlay {
 		for (Transaction tranzactie:transactions) {
 			if (tranzactie.getYear() == 2012) {
 				tx2012 = tranzactie;
+				//System.out.println(tranzactie.getTrader().toString());
 				break; //first transaction
 			}
 		}
@@ -340,12 +342,23 @@ public class TransactionPlay {
 		List<String> expected = Arrays.asList("a", "b", "c", "d", "f");
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
 
-		/*List<String> actual = wordsStream.stream()
-				..
-*/
+		System.out.println(wordsStream);
+
+		List<String> actual =
+				wordsStream.stream()
+						   .flatMapToInt(s -> s.chars())
+						   .mapToObj(e->Character.valueOf((char) e))
+						   .distinct()
+						   .map(i->i.toString())
+						   .collect(Collectors.toList());
 
 
-		//assertEquals(expected, actual);
+		System.out.println(actual);
+
+
+
+
+		assertEquals(expected, actual);
 	}
 	
 	
