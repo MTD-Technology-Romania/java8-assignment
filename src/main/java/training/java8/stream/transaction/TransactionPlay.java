@@ -38,7 +38,7 @@ public class TransactionPlay {
 			}
 		}
 		list.sort(Comparator.comparing(tranzactie-> tranzactie.getValue()));
-		System.out.println(list); //vizualizare rezultate
+		System.out.println("Test_1_old "+list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 
@@ -51,7 +51,7 @@ public class TransactionPlay {
 						    .filter(transaction -> transaction.getYear()==2011 )
 						    .sorted(Comparator.comparing(transaction -> transaction.getValue()))
 						    .collect(Collectors.toList());
-		System.out.println(list); //vizualizare rezultate
+		System.out.println("Test_1 "+list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 		
@@ -64,7 +64,7 @@ public class TransactionPlay {
 			if (!list.contains(tranzactie.getTrader().getCity()))
 			list.add(tranzactie.getTrader().getCity());
 		}
-		System.out.println(list);
+		System.out.println("Test_2_old "+list);
 		assertEquals(expected, list); 									
 	}
 
@@ -77,7 +77,7 @@ public class TransactionPlay {
 						    .map(tranzactie->tranzactie.getTrader().getCity())
 						    .distinct()
 						    .collect(Collectors.toList());
-		System.out.println(list);
+		System.out.println("Test_2 "+list);
 		assertEquals(expected, list);
 	}
 	
@@ -93,7 +93,7 @@ public class TransactionPlay {
 					list.add(t);
 		}
 		list.sort(Comparator.comparing(Trader::getName));
-		System.out.println(list); //vizualizare rezultate
+		System.out.println("Test_3_old "+list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 
@@ -109,7 +109,7 @@ public class TransactionPlay {
 						    .sorted(Comparator.comparing(trader -> trader.getName()))
 						    .collect(Collectors.toList());
 
-		System.out.println(list); //vizualizare rezultate
+		System.out.println("Test_3 "+list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
 	
@@ -125,7 +125,7 @@ public class TransactionPlay {
 		traderArrayList.sort(Comparator.naturalOrder());
 		String joined = traderArrayList.toString();
 		joined = joined.substring(1, traderArrayList.toString().length() - 1).replaceAll(" ", "");
-		System.out.println(joined); //vizualizare rezultate
+		System.out.println("Test_4_old "+joined); //vizualizare rezultate
 		assertEquals(expected, joined);
 	}
 
@@ -140,7 +140,6 @@ public class TransactionPlay {
 						.sorted(Comparator.naturalOrder())
 						.toList();
 
-		//cum colectam intr-un string direct, care sa aibe ,?
 		/*String joined =
 		    transactions.stream()
 						.map(transaction -> transaction.getTrader().getName())
@@ -148,11 +147,11 @@ public class TransactionPlay {
 						.sorted(Comparator.naturalOrder())
 						.collect(Collectors.joining(,));
 
-		System.out.println(joined); //vizualizare rezultate*/
-
+		System.out.println(joined); //vizualizare rezultate
+*/
 
 		String joined = joinedList.toString().substring(1,joinedList.toString().length()-1).replaceAll(" ","");
-		System.out.println(joined); //vizualizare rezultate
+		System.out.println("Test_4 "+joined); //vizualizare rezultate
 
 		assertEquals(expected, joined);
 	}
@@ -167,7 +166,7 @@ public class TransactionPlay {
 			if (city=="Milan")
 				areTradersInMilan=true;
 		}
-		System.out.println(areTradersInMilan); //vizualizare rezultate
+		System.out.println("Test_5_old "+areTradersInMilan); //vizualizare rezultate
 
 		assertTrue(areTradersInMilan);
 	}
@@ -185,8 +184,8 @@ public class TransactionPlay {
 		if (!areTradersInMilanList.isEmpty())
 			areTradersInMilan=true;
 
-		System.out.println(areTradersInMilanList); //vizualizare rezultate
-		System.out.println(areTradersInMilan);     //vizualizare rezultat
+		System.out.println("Test_5 "+areTradersInMilanList); //vizualizare rezultate
+		System.out.println("Test_5 "+areTradersInMilan);     //vizualizare rezultat
 		assertTrue(areTradersInMilan);
 	}
 	
@@ -198,7 +197,7 @@ public class TransactionPlay {
 				sum+=tranzactie.getValue();
 			}
 		}
-		System.out.println(sum); //vizualizare rezultat
+		System.out.println("Test_6_old "+sum); //vizualizare rezultat
 		assertEquals(2650, sum);
 	}
 
@@ -211,7 +210,7 @@ public class TransactionPlay {
 						    .map(transaction -> transaction.getValue())
 						    .reduce(0,(e1, e2) -> e1 + e2);
 
-		System.out.println(sum); // vizualizare rezultat
+		System.out.println("Test_6 "+sum); // vizualizare rezultat
 		assertEquals(2650, sum);
 	}
 	
@@ -223,7 +222,7 @@ public class TransactionPlay {
 			if (tranzactie.getValue()>max)
 				max=tranzactie.getValue();
 		}
-		System.out.println(max); //vizualizare rezultat
+		System.out.println("Test_7_old "+max); //vizualizare rezultat
 		assertEquals(1000, max);
 	}
 
@@ -231,11 +230,11 @@ public class TransactionPlay {
 	public void max_transaction_value() {
 		int max =
 				transactions.stream()
-						    .map(transaction->transaction.getValue())
+						    .map(transaction -> transaction.getValue())
 						    .max((x, y) -> Integer.compare(x, y))
 						    .get();
 
-		System.out.println(max); //vizualizare rezultat
+		System.out.println("Test_7 "+max); //vizualizare rezultat
 		assertEquals(1000, max);
 	}
 
@@ -252,7 +251,7 @@ public class TransactionPlay {
 				a = tranzactie.getValue();
 			}
 		}
-		System.out.println(a); //vizualizare rezultat
+		System.out.println("Test_8_old "+a); //vizualizare rezultat
 		assertEquals(expected, min);
 	}
 
@@ -266,6 +265,7 @@ public class TransactionPlay {
 						    .min(Comparator.comparing(transaction -> transaction.getValue()))
 						    .get();
 		min=m;
+		System.out.println("Test_8 "+min);
 		assertEquals(expected, min);
 	}
 
@@ -281,7 +281,7 @@ public class TransactionPlay {
 				break; //first transaction
 			}
 		}
-		System.out.println(tx2012); //vizualizare rezultat
+		System.out.println("Test_9_old "+tx2012); //vizualizare rezultat
 		assertEquals(expected, tx2012);
 	}
 
@@ -296,7 +296,7 @@ public class TransactionPlay {
 						    .findFirst()
 						    .get();
 		tx2012=t;
-		System.out.println(t);
+		System.out.println("Test_9 "+t);
 		assertEquals(expected, tx2012);
 	}
 
@@ -330,7 +330,7 @@ public class TransactionPlay {
 				      .distinct()
 				      .collect(Collectors.toList());*/
 
-		System.out.println(actual); //vizualizarea rezultatului
+		System.out.println("Test_bonus_old "+actual); //vizualizarea rezultatului
 		assertEquals(expected, actual);
 	}
 
@@ -342,22 +342,16 @@ public class TransactionPlay {
 		List<String> expected = Arrays.asList("a", "b", "c", "d", "f");
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
 
-		System.out.println(wordsStream);
+		System.out.println(wordsStream); //viz initial
 
 		List<String> actual =
 				wordsStream.stream()
 						   .flatMapToInt(s -> s.chars())
 						   .mapToObj(e->Character.valueOf((char) e))
 						   .distinct()
-						   .map(i->i.toString())
+						   .map(character -> character.toString())
 						   .collect(Collectors.toList());
-
-
-		System.out.println(actual);
-
-
-
-
+		System.out.println("Test_bonus "+actual); //viz rez
 		assertEquals(expected, actual);
 	}
 	
