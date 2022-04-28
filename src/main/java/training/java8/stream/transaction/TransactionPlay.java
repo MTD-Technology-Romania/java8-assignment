@@ -116,8 +116,8 @@ public class TransactionPlay {
 	public void old_school_names_of_all_traders_sorted_joined() {
 		String expected = "Alan,Brian,Mario,Raoul";
 		ArrayList<String> traderArrayList = new ArrayList<>();
-		for (Transaction t : transactions) {
-			String trader = t.getTrader().getName();
+		for (Transaction tranzactie : transactions) {
+			String trader = tranzactie.getTrader().getName();
 			if (!traderArrayList.contains(trader))
 				traderArrayList.add(trader);
 		}
@@ -306,17 +306,25 @@ public class TransactionPlay {
 		List<String> wordsStream = Arrays.asList("abcd", "acdf");
 		List<String> actual=new ArrayList<>();
 
-		List<String> act=new ArrayList<>();
+		ArrayList<Character> eachChar=new ArrayList<>();
 		for (String eachWord:wordsStream) {
 			for (int i = 0; i < eachWord.length(); i++) {
-				act.add(String.valueOf(eachWord.charAt(i)));
+				for (int j = 0; j <= eachChar.size(); j++) {
+					if (!eachChar.contains(eachWord.charAt(i))) {
+						eachChar.add(eachWord.charAt(i));
+					}
+				}
 			}
 		}
-		Set <String> sets=new HashSet<>(act);
+		for (char e:eachChar) {
+			actual.add(String.valueOf(e));
+		}
+
+		/*Set <String> sets=new HashSet<>(eachChar);
 		actual.addAll(sets);
 
 //.. ?
-		/*actual= actual.stream()
+		actual= actual.stream()
 				      .distinct()
 				      .collect(Collectors.toList());*/
 
