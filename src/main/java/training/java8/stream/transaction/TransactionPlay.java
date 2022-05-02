@@ -1,6 +1,7 @@
 package training.java8.stream.transaction;
 
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class TransactionPlay {
 	public void old_school_all_2011_transactions_sorted_by_value() {
 		List<Transaction> expected = Arrays.asList(transactions.get(0), transactions.get(2));
 
-		List<Transaction> list = new ArrayList<Transaction>();
+		List<Transaction> list = new ArrayList<>();
 		for (Transaction tranzactie : transactions) {
 			int an_tranzactie = tranzactie.getYear();
 			if (an_tranzactie == 2011) {
@@ -54,7 +55,7 @@ public class TransactionPlay {
 		System.out.println("Test_1 "+list); //vizualizare rezultate
 		assertEquals(expected, list);
 	}
-		
+
 	@Test //2
 	public void old_school_unique_cities_of_the_traders() {
 		List<String> expected = Arrays.asList("Cambridge", "Milan");
@@ -88,9 +89,10 @@ public class TransactionPlay {
 		List<Trader> list = new ArrayList<>();
 		for (Transaction tranzactie:transactions){
 			Trader t=tranzactie.getTrader();
-			if (t.getCity()=="Cambridge")
-				if (!list.contains(t))
+			if (t.getCity().equals("Cambridge")) //se pune invers de obicei
+				if (!list.contains(t)) { //se pun acolade mereu la if
 					list.add(t);
+				}
 		}
 		list.sort(Comparator.comparing(Trader::getName));
 		System.out.println("Test_3_old "+list); //vizualizare rezultate
@@ -104,7 +106,7 @@ public class TransactionPlay {
 		List<Trader> list =
 				transactions.stream()
 						    .map(transaction -> transaction.getTrader())
-						    .filter(trader -> trader.getCity()=="Cambridge")
+						    .filter(trader -> trader.getCity().equals("Cambridge"))
 						    .distinct()
 						    .sorted(Comparator.comparing(trader -> trader.getName()))
 						    .collect(Collectors.toList());
@@ -133,24 +135,24 @@ public class TransactionPlay {
 	public void names_of_all_traders_sorted_joined() {
 		String expected = "Alan,Brian,Mario,Raoul";
 
-		List<String> joinedList =
+		/*List<String> joinedList =
 				transactions.stream()
 						.map(transaction -> transaction.getTrader().getName())
 						.distinct()
 						.sorted(Comparator.naturalOrder())
-						.toList();
+						.toList();*/
 
-		/*String joined =
+		String joined =
 		    transactions.stream()
 						.map(transaction -> transaction.getTrader().getName())
 						.distinct()
 						.sorted(Comparator.naturalOrder())
-						.collect(Collectors.joining(,));
+						.collect(Collectors.joining(","));
 
 		System.out.println(joined); //vizualizare rezultate
-*/
 
-		String joined = joinedList.toString().substring(1,joinedList.toString().length()-1).replaceAll(" ","");
+
+		//String joined = joinedList.toString().substring(1,joinedList.toString().length()-1).replaceAll(" ","");
 		System.out.println("Test_4 "+joined); //vizualizare rezultate
 
 		assertEquals(expected, joined);
@@ -163,7 +165,7 @@ public class TransactionPlay {
 
 		for (Transaction tranzactie:transactions){
 			String city = tranzactie.getTrader().getCity();
-			if (city=="Milan")
+			if (city.equals("Milan"))
 				areTradersInMilan=true;
 		}
 		System.out.println("Test_5_old "+areTradersInMilan); //vizualizare rezultate
@@ -175,17 +177,23 @@ public class TransactionPlay {
 	public void are_traders_in_Milano() {
 		boolean areTradersInMilan=false;
 
-		List<String> areTradersInMilanList =
-				transactions.stream()
-						    .map(transaction -> transaction.getTrader().getCity())
-						    .filter(city->city.equals("Milan"))
-						    .collect(Collectors.toList());
+//		List<String> areTradersInMilanList =
+//				transactions.stream()
+//						    .map(transaction -> transaction.getTrader().getCity())
+//						    .filter(city->city.equals("Milan"))
+//						    .collect(Collectors.toList());
 
-		if (!areTradersInMilanList.isEmpty())
-			areTradersInMilan=true;
+//		if (!areTradersInMilanList.isEmpty())
+//			areTradersInMilan=true;
+//
+		Optional<String> areTradersInMilanList = transactions.stream() //de citit despre Optional, returnam boolean din isPresent
+				.map(transaction -> transaction.getTrader().getCity())
+				.filter(city->city.equals("Milan"))
+				.findFirst();
 
-		System.out.println("Test_5 "+areTradersInMilanList); //vizualizare rezultate
+		areTradersInMilan=areTradersInMilanList.isPresent();
 		System.out.println("Test_5 "+areTradersInMilan);     //vizualizare rezultat
+
 		assertTrue(areTradersInMilan);
 	}
 	
@@ -193,7 +201,7 @@ public class TransactionPlay {
 	public void old_school_sum_of_values_of_transactions_from_Cambridge_traders() {
 		int sum = 0;
 		for (Transaction tranzactie:transactions){
-			if (tranzactie.getTrader().getCity()=="Cambridge"){
+			if (tranzactie.getTrader().getCity().equals("Cambridge")){
 				sum+=tranzactie.getValue();
 			}
 		}
@@ -206,7 +214,7 @@ public class TransactionPlay {
 
 		int sum=
 				transactions.stream()
-						    .filter(transaction -> transaction.getTrader().getCity() == "Cambridge")
+						    .filter(transaction -> transaction.getTrader().getCity().equals( "Cambridge"))
 						    .map(transaction -> transaction.getValue())
 						    .reduce(0,(e1, e2) -> e1 + e2);
 
@@ -228,14 +236,17 @@ public class TransactionPlay {
 
 	@Test //7
 	public void max_transaction_value() {
-		int max =
+		int m=-1;
+		Optional<Integer> max =
 				transactions.stream()
 						    .map(transaction -> transaction.getValue())
-						    .max((x, y) -> Integer.compare(x, y))
-						    .get();
+						    .max(Comparator.comparingInt(x -> x));
 
+		if (max.isPresent()) {
+			m=max.get();
+		}
 		System.out.println("Test_7 "+max); //vizualizare rezultat
-		assertEquals(1000, max);
+		assertEquals(1000, m);
 	}
 
 
@@ -244,7 +255,7 @@ public class TransactionPlay {
 		Transaction expected = transactions.get(0);
 		Transaction min = null;
 
-		int a = 2147483647;
+		int a = Integer.MAX_VALUE;
 		for (Transaction tranzactie : transactions) {
 			if (tranzactie.getValue() < a) {
 				min = tranzactie;
@@ -255,7 +266,7 @@ public class TransactionPlay {
 		assertEquals(expected, min);
 	}
 
-	@Test //8 //need help ggl
+	@Test //8
 	public void transaction_with_smallest_value() {
 		Transaction expected = transactions.get(0);
 		Transaction min = null;
@@ -277,7 +288,6 @@ public class TransactionPlay {
 		for (Transaction tranzactie:transactions) {
 			if (tranzactie.getYear() == 2012) {
 				tx2012 = tranzactie;
-				//System.out.println(tranzactie.getTrader().toString());
 				break; //first transaction
 			}
 		}
@@ -297,7 +307,7 @@ public class TransactionPlay {
 						    .get();
 		tx2012=t;
 		System.out.println("Test_9 "+t);
-		assertEquals(expected, tx2012);
+		assertEquals(expected, tx2012);   //de refacut cu Optional.isPresent
 	}
 
 	// bonus
@@ -355,5 +365,7 @@ public class TransactionPlay {
 		assertEquals(expected, actual);
 	}
 	
-	
+	//Optional - done, unit teste - woi, Mokito
+
 }
+
